@@ -19,56 +19,41 @@ the diagonal to its apex, 60 deg to the right of it. `circle R` = radius R, `squ
 
 ## Setup on a new machine
 
-One-time steps to take a bare Ubuntu install to the point where "Running the Project" below works. You
-need two files, both already downloaded and unzipped: the **code** archive (this repo) and the **image**
-archive (`px4dev-snapshot.tar`, a `docker save` of the container image). Nothing is cloned or pulled from
-the internet.
-
-`setup.sh`, in the root of the code folder, does steps 1-5 for you:
-
-```bash
-./setup.sh path/to/px4dev-snapshot.tar
-```
-
-The path is optional - it also looks next to itself, in the current directory and in `~/Downloads`. It is
-safe to re-run, since every step checks whether it is already done, and it stops with an explanation if
-something is missing. Expect it to ask you to log out and back in once, right after it adds you to the
-`docker` group. The rest of this section is the same thing done by hand.
+One-time steps to take a bare Ubuntu install to the point where "Running the Project" below works. Two
+things come from the internet: the **code** (this repo, cloned from GitHub) and the **image**
+(`ghcr.io/maringallien/px4dev:snapshot`, the pre-built container environment on GitHub Container
+Registry).
 
 ### 1. Host prep
 ```bash
 sudo apt update
-sudo apt install -y docker.io x11-xserver-utils
+sudo apt install -y docker.io x11-xserver-utils git
 sudo usermod -aG docker $USER
+
+# Then fully logout and log back in
 ```
 The group change needs a full logout and login of the desktop session - a new terminal is not enough.
 Check with `groups`, which should now list `docker`.
 
-Have ~30 GB free before starting: the image takes ~25 GB in `/var/lib/docker`, and the tarball sits
-alongside it while it loads.
+Have ~30 GB free before starting - the image unpacks to ~25 GB in `/var/lib/docker`.
 
-### 2. Load the image
+### 2. Pull the image
 ```bash
-docker load -i px4dev-snapshot.tar
-docker images                        # note the repo:tag that appears
+docker pull ghcr.io/maringallien/px4dev:snapshot
+
+# If you get the error: "permission denied while trying to connect to the docker API at unix:///var/run/docker.sock"
+# group change was not applied, so reboot system
 ```
 The image is the whole environment, already built: ROS 2 Jazzy, Gazebo Harmonic, PX4 prebuilt in
 `/root/PX4-Autopilot/build/px4_sitl_default`, the Gazebo model cache in `/root/.gz` so SITL starts without
 downloading anything, `MicroXRCEAgent` on the PATH, and a `.bashrc` that sources
 `/opt/ros/jazzy/setup.bash` plus `/root/ros2_ws/install/setup.bash` once that exists.
 
-None of it needs rebuilding, and the PX4 version in it is pinned on purpose: `mission_server` subscribes to
-version-suffixed topics (`/fmu/out/vehicle_status_v4`, `/fmu/out/vehicle_local_position_v1`) that a newer
-PX4 can rename.
-
-### 3. Put the code at `~/ros2_ws/src`
+### 3. Clone the code to `~/ros2_ws/src`
 ```bash
-mkdir -p ~/ros2_ws
-mv <unzipped-code-folder> ~/ros2_ws/src
-ls ~/ros2_ws/src                     # drone_mission  drone_mission_interfaces  px4_msgs
+git clone https://github.com/maringallien/drone_mission ~/ros2_ws/src
 ```
-The three package folders have to sit directly under `src/`. If `ls` shows one folder instead of three,
-the archive unpacked a level deep - move its contents up.
+The repo is the workspace `src/` directory itself - the three package folders sit directly under it.
 
 ### 4. Create the container (once)
 ```bash
@@ -121,6 +106,7 @@ It runs on the host, not in the container. Host networking means it finds the si
 ## Running the Project
 
 ### Start Docker
+(Skip if container already running from setup steps above)
 ```bash
 xhost +local:          # host shell, resets every login
 docker start px4dev
