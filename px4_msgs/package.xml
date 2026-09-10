@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
+  <name>px4_msgs</name>
+  <version>1.17.0</version>
+  <description>The subset of the PX4 uORB interfaces that drone_mission uses, copied from upstream px4_msgs. See README.md.</description>
+  <maintainer email="gallienmarin2001@gmail.com">Marin Gallien</maintainer>
+  <license>BSD-3-Clause</license>
+
+  <author>PX4 Development Team</author>
+  <url type="repository">https://github.com/PX4/px4_msgs</url>
+
+  <!-- Build tools-->
+  <buildtool_depend>ament_cmake</buildtool_depend>
+  <buildtool_depend>rosidl_default_generators</buildtool_depend>
+
+  <exec_depend>rosidl_default_runtime</exec_depend>
+
+  <member_of_group>rosidl_interface_packages</member_of_group>
+
+  <!-- Build system-->
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+</package>

@@ -1,0 +1,16 @@
+# Describes the shape of data objects used to communicate between mission_CLI and mission_server
+
+# Goal
+string command      # "circle" | "square" | "triangle" | "land"
+float32 value       # Radius (circle) or side length (square/triangle) in metres; ignored for land
+---
+# Result
+bool success
+string message
+---
+# Feedback
+string state        # Mission server state name, e.g. TAKEOFF, FLYING, LANDING
+float32 progress    # 0..1 arc-length fraction of the pattern (altitude fraction during TAKEOFF)
+float32 x           # Measured NED local position (metres); z < 0 is above ground
+float32 y
+float32 z
