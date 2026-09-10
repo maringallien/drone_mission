@@ -1,4 +1,13 @@
 # drone_mission
+This program takes a goal, such as "circle 5", and makes the drone fly that shape in Gazebo
+
+The pieces it sits on top of:
+
+* **PX4** is the flight controller. It's the autopilot software that actually flies the drone
+* **Gazebo** is the virtual environment in which the drone flies in. 
+* **ROS 2** is the middleware this project is written in -  nodesthat pass messages around. `mission_server` and `mission_cli` are both ROS 2 nodes.
+* **uXRCE-DDS** is the bridge between PX4 and ROS 2. It's what lets ROS 2 code read PX4's `/fmu/...` topics and send setpoints back.
+
 * `mission_server` is the node that flies the drone. It talks to PX4 over the uXRCE-DDS bridge, arms
   it, puts it in OFFBOARD, takes off, flies the shape you asked for and lands. It listens on one
   action, `mission_command` (`drone_mission_interfaces/action/MissionCommand`).
